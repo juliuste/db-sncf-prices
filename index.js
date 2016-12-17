@@ -1,42 +1,14 @@
 'use strict'
 
-const equal = require('deep-eql')
-const db = require('db-prices')
-// const db2 = require('db-hafas/lib/routes')
-const sncf = require('sncf').routes
 const filter = require('lodash.filter')
 const sortBy = require('lodash.sortby')
 const first = require('array-first')
+
+const withDB = require('./with-db')
+const withSNCF = require('./with-sncf')
 const interchanges = require('./interchanges')
 
 const changeTime = 60*60*1000
-
-const parseDB = (d) => ({
-	from: d.trips[0].from,
-	to: d.trips[d.trips.length-1].to,
-	departure: d.trips[0].start,
-	arrival: d.trips[d.trips.length-1].end,
-	price: parseFloat(d.offer.price)
-})
-
-const parseSNCF = (s) => ({
-	from: s.segments[0].from,
-	to: s.segments[s.segments.length-1].to,
-	departure: s.segments[0].departure,
-	arrival: s.segments[s.segments.length-1].arrival,
-	price: parseFloat(s.price)
-})
-
-
-
-const withDB = (from, to, when) =>
-	// db2(from.db, to.db, {when: new Date(when)})
-	db(from.db, to.db, new Date(when))
-	.then((rs) => rs.map(parseDB))
-
-const withSNCF = (from, to, when) =>
-	sncf(from.sncf, to.sncf, new Date(when))
-	.then((rs) => rs.map(parseSNCF))
 
 
 
