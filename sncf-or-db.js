@@ -13,21 +13,21 @@ const DB = (name) =>
 	})
 	.then((results) => {
 		if (results.length === 0) throw new Error('No station found.')
-		return results[0].id
+		return {id: results[0].id, name: results[0].name}
 	})
 
 const SNCF = (name) =>
 	places(name)
 	.then((results) => {
 		if (results.length === 0) throw new Error('No station found.')
-		return results[0].id
+		return {id: results[0].id, name: results[0].name}
 	})
 
 const both = (name) =>
 	Promise.all([DB(name), SNCF(name)])
 	.then(([db, sncf]) => {
-		return networkOf(db)
-		.then((network) => ({network, db, sncf}))
+		return networkOf(db.id)
+		.then((network) => ({network, db: db.id, sncf: sncf.id, name: db.name || sncf.name}))
 	})
 
 module.exports = both

@@ -27,6 +27,7 @@ const networkOf = (id) => new Promise((yay, nay) => {
 		if (s.sncf_id === id || +s.db_id === id)
 			yay(s.country.toLowerCase() === 'fr' ? 'sncf' : 'db')
 	})
+	.on('end', () => nay(new Error('No station found')))
 })
 
 module.exports = networkOf

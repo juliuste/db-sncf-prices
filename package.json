@@ -1,7 +1,7 @@
 {
   "name": "db-sncf-prices",
   "description": "db-sncf-prices api client",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "keywords": [
     "price",
     "train",
@@ -26,6 +26,8 @@
   ],
   "dependencies": {
     "array-first": "^1.0.2",
+    "csv-parser": "^1.11.0",
+    "db-hafas": "derhuerst/db-hafas",
     "db-prices": "juliuste/db-prices",
     "deep-eql": "^2.0.1",
     "lodash.filter": "^4.6.0",
