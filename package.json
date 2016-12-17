@@ -1,7 +1,7 @@
 {
   "name": "db-sncf-prices",
   "description": "db-sncf-prices api client",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "keywords": [
     "price",
     "train",
@@ -22,7 +22,14 @@
   "bugs": "https://github.com/juliuste/db-sncf-prices/issues",
   "main": "index.js",
   "files": [
-    "index.js"
+    "index.js",
+    "sncf-or-db.js",
+    "with-db.js",
+    "with-sncf.js",
+    "stations.csv",
+    "network-of.js",
+    "interchanges.js",
+    "germany.geo.json"
   ],
   "dependencies": {
     "array-first": "^1.0.2",
