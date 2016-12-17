@@ -1,9 +1,15 @@
 'use strict'
 
+const so = require('so')
+
 const SNCForDB = require('./sncf-or-db')
+const withDB = require('./with-db')
+const withSNCF = require('./with-sncf')
 const query = require('./index')
 
 const when = new Date('2017-01-08T10:00:00.000Z')
+
+
 
 Promise.all([
 	SNCForDB('Le Mans'),
@@ -11,7 +17,14 @@ Promise.all([
 	// SNCForDB('Toulouse'),
 	// SNCForDB('Paris'),
 ])
-.then(([from, to]) => query(from, to, when))
+.then(so(function* ([from, to]) {
+	console.log('DB only')
+	console.log(yield withDB(from, to, when))
+	console.log('SNCF only')
+	console.log(yield withSNCF(from, to, when))
+
+	return query(from, to, when)
+}))
 .then((routes) => {
 	for (let route of routes) {
 		console.log('----------------------------')
