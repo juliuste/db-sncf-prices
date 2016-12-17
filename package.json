@@ -26,11 +26,11 @@
   ],
   "dependencies": {
     "array-first": "^1.0.2",
-    "db-prices": "^0.1.4",
+    "db-prices": "juliuste/db-prices",
     "deep-eql": "^2.0.1",
     "lodash.filter": "^4.6.0",
     "lodash.sortby": "^4.7.0",
-    "sncf": "^0.2.0"
+    "sncf": "derhuerst/sncf"
   },
   "devDependencies": {},
   "scripts": {
