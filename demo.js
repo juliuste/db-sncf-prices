@@ -1,12 +1,17 @@
 'use strict'
 
+const SNCForDB = require('./sncf-or-db')
 const query = require('./index')
 
-query({ // Le Mans
-	network: 'sncf', sncf: 'FRAET', db: 8700435
-}, { // Berlin
-	network: 'db', sncf: 'DEHBF', db: 8096003
-}, new Date('2017-01-08T10:00:00.000Z'))
+const when = new Date('2017-01-08T10:00:00.000Z')
+
+Promise.all([
+	SNCForDB('Le Mans'),
+	SNCForDB('Berlin'),
+	// SNCForDB('Toulouse'),
+	// SNCForDB('Paris'),
+])
+.then(([from, to]) => query(from, to, when))
 .then((routes) => {
 	for (let route of routes) {
 		console.log('----------------------------')
