@@ -2,6 +2,7 @@
 
 const equal = require('deep-eql')
 const db = require('db-prices')
+// const db2 = require('db-hafas/lib/routes')
 const sncf = require('sncf').routes
 const filter = require('lodash.filter')
 const sortBy = require('lodash.sortby')
@@ -15,7 +16,7 @@ const parseDB = (d) => ({
 	to: d.trips[d.trips.length-1].to,
 	departure: d.trips[0].start,
 	arrival: d.trips[d.trips.length-1].end,
-	price: d.offer.price
+	price: parseFloat(d.offer.price)
 })
 
 const parseSNCF = (s) => ({
@@ -23,8 +24,21 @@ const parseSNCF = (s) => ({
 	to: s.segments[s.segments.length-1].to,
 	departure: s.segments[0].departure,
 	arrival: s.segments[s.segments.length-1].arrival,
-	price: s.price
+	price: parseFloat(s.price)
 })
+
+
+
+const withDB = (from, to, when) =>
+	// db2(from.db, to.db, {when: new Date(when)})
+	db(from.db, to.db, new Date(when))
+	.then((rs) => rs.map(parseDB))
+
+const withSNCF = (from, to, when) =>
+	sncf(from.sncf, to.sncf, new Date(when))
+	.then((rs) => rs.map(parseSNCF))
+
+
 
 const pair = (connections1, connections2) => {
 	const pairs = []
@@ -42,41 +56,31 @@ const parseTuple = (tuple) => filter(pair(tuple[0], tuple[1]), (p) => changePoss
 
 const merge = (lists) => [].concat(...lists)
 
-const main = (from, to, date, options) => {
-	const tuples = []
-	for(let interchange of interchanges){
-		if(!equal(interchange, from) && !equal(interchange, to)){
-			if(from.network==='sncf'){
-				tuples.push(Promise.all([
-					sncf(from.sncf, interchange.sncf, date).then((s) => s.map(parseSNCF)),
-					db(interchange.db, to.db, date).then((d) => d.map(parseDB))
-				]))
-			}
-			else if(from.network==='db'){
-				tuples.push(Promise.all([
-					db(from.db, interchange.db, date).then((d) => d.map(parseDB)),
-					sncf(interchange.sncf, to.sncf, date).then((s) => s.map(parseSNCF))
-				]))
-			}
-			else{
-				throw new Error('Unsupported network: '+from.network)
-			}
-		}
+const query = (from, to, when) => {
+	const tasks = []
+
+	for (let interchange of interchanges) {
+		if(interchange.db === from.db || interchange.sncf === from.sncf
+		|| interchange.db === to.db || interchange.sncf === to.sncf) continue
+
+		if (from.network === 'sncf') {
+			tasks.push(Promise.all([
+				withSNCF(from, interchange, when),
+				withDB(interchange, to, when)
+			]))
+		} else if (from.network === 'db') {
+			tasks.push(Promise.all([
+				withDB(from, interchange, when),
+				withSNCF(interchange, to, when)
+			]))
+		} else throw new Error('Unsupported network: '+from.network)
 	}
 
-	return Promise.all(tuples)
+	return Promise.all(tasks)
 	.then((tuples) => tuples.map(parseTuple))
 	.then(merge)
-	// .then((list) => sortBy(list, (pair) => +pair[0].price+pair[1].price))
-	// .then((list) => first(list, 5))
+	.then((list) => sortBy(list, (pair) => pair[0].price + pair[1].price))
+	.then((list) => first(list, 5))
 }
 
-
-
-main({ // Toulouse
-	network: 'sncf', sncf: 'FRTLS', db: 8700065
-}, { // Berlin
-	network: 'db', sncf: 'DEHBF', db: 8096003
-}, new Date((1496278800+60*60*7)*1000))
-.then(console.log)
-.catch(console.error)
+module.exports = query
