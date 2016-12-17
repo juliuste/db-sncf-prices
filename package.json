@@ -1,0 +1,44 @@
+{
+  "name": "db-sncf-prices",
+  "description": "db-sncf-prices api client",
+  "version": "0.1.0",
+  "keywords": [
+    "price",
+    "train",
+    "railway",
+    "db",
+    "deutsche bahn",
+    "sncf",
+    "francais",
+    "french",
+    "allemand",
+    "französisch",
+    "deutsch",
+    "german"
+  ],
+  "author": "Julius Tens <mail@juliustens.de>",
+  "homepage": "https://github.com/juliuste/db-sncf-prices",
+  "repository": "juliuste/db-sncf-prices",
+  "bugs": "https://github.com/juliuste/db-sncf-prices/issues",
+  "main": "index.js",
+  "files": [
+    "index.js"
+  ],
+  "dependencies": {
+    "array-first": "^1.0.2",
+    "db-prices": "^0.1.4",
+    "deep-eql": "^2.0.1",
+    "lodash.filter": "^4.6.0",
+    "lodash.sortby": "^4.7.0",
+    "sncf": "^0.2.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "node test.js",
+    "prepublish": "npm test"
+  },
+  "engine": {
+    "node": ">=6"
+  },
+  "license": "MIT"
+}
